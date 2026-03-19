@@ -53,7 +53,7 @@ export const popularServices = [
 
   // === STREAMING: Others ===
   { name: 'Apple TV+', category: 'streaming', defaultPrice: 12.99, color: '#000000' },
-  { name: 'Amazon Prime (includes Video)', category: 'streaming', defaultPrice: 14.99, color: '#00A8E1' },
+  // Amazon Prime moved to Amazon Ecosystem section below
   { name: 'Peacock (Premium w/ Ads)', category: 'streaming', defaultPrice: 10.99, color: '#000000' },
   { name: 'Peacock (Premium Plus)', category: 'streaming', defaultPrice: 16.99, color: '#000000' },
   { name: 'Paramount+ (Essential w/ Ads)', category: 'streaming', defaultPrice: 8.99, color: '#0064FF' },
@@ -143,4 +143,72 @@ export const popularServices = [
   // === ESPN (add-ons) ===
   { name: 'ESPN Select', category: 'streaming', defaultPrice: 12.99, color: '#C8102E' },
   { name: 'ESPN Unlimited', category: 'streaming', defaultPrice: 29.99, color: '#C8102E' },
+
+  // === STREAMING: Disney+/Hulu/ESPN Triple (Old Bundle) ===
+  { name: 'Disney+/Hulu/ESPN Select (w/ Ads)', category: 'streaming', defaultPrice: 20.00, color: '#113CCF' },
+  { name: 'Disney+/Hulu/ESPN Select (No Ads)', category: 'streaming', defaultPrice: 30.00, color: '#113CCF' },
+
+  // === STREAMING: Niche/Add-on Services ===
+  { name: 'Starz', category: 'streaming', defaultPrice: 10.99, color: '#000000' },
+  { name: 'AMC+ (w/ Ads)', category: 'streaming', defaultPrice: 7.99, color: '#1A1A2E' },
+  { name: 'AMC+ (No Ads)', category: 'streaming', defaultPrice: 10.99, color: '#1A1A2E' },
+  { name: 'BET+', category: 'streaming', defaultPrice: 9.99, color: '#D4145A' },
+  { name: 'Discovery+  (w/ Ads)', category: 'streaming', defaultPrice: 5.99, color: '#003B6F' },
+  { name: 'Discovery+ (No Ads)', category: 'streaming', defaultPrice: 6.99, color: '#003B6F' },
+  { name: 'MGM+', category: 'streaming', defaultPrice: 7.99, color: '#B8860B' },
+  { name: 'Hallmark+', category: 'streaming', defaultPrice: 7.99, color: '#8B0000' },
+
+  // === STREAMING: Anime ===
+  { name: 'Crunchyroll (Fan)', category: 'streaming', defaultPrice: 9.99, color: '#F47521' },
+  { name: 'Crunchyroll (Mega Fan)', category: 'streaming', defaultPrice: 11.99, color: '#F47521' },
+  { name: 'Crunchyroll (Ultimate Fan)', category: 'streaming', defaultPrice: 15.99, color: '#F47521' },
+
+  // === AMAZON ECOSYSTEM ===
+  { name: 'Amazon Prime (Monthly)', category: 'streaming', defaultPrice: 14.99, color: '#00A8E1' },
+  { name: 'Amazon Prime (Annual)', category: 'streaming', defaultPrice: 11.58, color: '#00A8E1' },  // $139/yr
+  { name: 'Audible Plus', category: 'streaming', defaultPrice: 7.95, color: '#F79400' },
+  { name: 'Audible Premium Plus', category: 'streaming', defaultPrice: 14.95, color: '#F79400' },
+  { name: 'Audible Premium Plus (Annual)', category: 'streaming', defaultPrice: 12.46, color: '#F79400' },  // $149.50/yr
+  { name: 'Kindle Unlimited', category: 'streaming', defaultPrice: 11.99, color: '#FF9900' },
+
+  // === APPLE BUNDLES ===
+  { name: 'Apple One (Individual)', category: 'streaming', defaultPrice: 19.95, color: '#000000' },
+  { name: 'Apple One (Family)', category: 'streaming', defaultPrice: 25.95, color: '#000000' },
+  { name: 'Apple One (Premier)', category: 'streaming', defaultPrice: 37.95, color: '#000000' },
+
+  // === CARRIER BUNDLES (for awareness — price depends on plan) ===
+  { name: 'Verizon: Netflix + Max Bundle (w/ Ads)', category: 'streaming', defaultPrice: 10.00, color: '#CD040B' },
+  { name: 'Xfinity StreamSaver (Netflix+Peacock+AppleTV+)', category: 'streaming', defaultPrice: 18.00, color: '#E10A0A' },
+  { name: 'Walmart+ Membership', category: 'other', defaultPrice: 12.95, color: '#0071DC' },
+  { name: 'Walmart+ Membership (Annual)', category: 'other', defaultPrice: 8.17, color: '#0071DC' },  // $98/yr
+
+  // === ANNUAL PRICING VARIANTS (shown as monthly equivalent) ===
+  { name: 'Disney+ Basic (Annual)', category: 'streaming', defaultPrice: 8.33, color: '#113CCF' },  // $99.99/yr
+  { name: 'Disney+ Premium (Annual)', category: 'streaming', defaultPrice: 15.83, color: '#113CCF' },  // $189.99/yr
+  { name: 'Hulu w/ Ads (Annual)', category: 'streaming', defaultPrice: 8.33, color: '#1CE783' },  // $99.99/yr
+  { name: 'Peacock Premium (Annual)', category: 'streaming', defaultPrice: 8.33, color: '#000000' },  // $99.99/yr
+  { name: 'Paramount+ Essential (Annual)', category: 'streaming', defaultPrice: 5.00, color: '#0064FF' },  // $59.99/yr
+  { name: 'Paramount+ w/ Showtime (Annual)', category: 'streaming', defaultPrice: 9.17, color: '#0064FF' },  // $109.99/yr
+  { name: 'Crunchyroll Fan (Annual)', category: 'streaming', defaultPrice: 8.33, color: '#F47521' },  // $99.99/yr
+  { name: 'AMC+ (Annual)', category: 'streaming', defaultPrice: 9.17, color: '#1A1A2E' },  // $109.99/yr
+  { name: 'BET+ (Annual)', category: 'streaming', defaultPrice: 7.92, color: '#D4145A' },  // $94.99/yr
+  { name: 'Spotify Premium Individual (Annual)', category: 'music', defaultPrice: 10.75, color: '#1DB954' },  // $129/yr
+  { name: 'Max Basic (Annual)', category: 'streaming', defaultPrice: 8.67, color: '#002BE7' },  // $103.99/yr
+  { name: 'Max Standard (Annual)', category: 'streaming', defaultPrice: 14.58, color: '#002BE7' },  // $174.99/yr
+  { name: 'Max Premium (Annual)', category: 'streaming', defaultPrice: 18.33, color: '#002BE7' },  // $219.99/yr
+
+  // === GAMING (Annual pricing) ===
+  { name: 'PlayStation Plus Essential (Annual)', category: 'gaming', defaultPrice: 6.67, color: '#003791' },  // $79.99/yr
+  { name: 'PlayStation Plus Extra (Annual)', category: 'gaming', defaultPrice: 11.25, color: '#003791' },  // $134.99/yr
+  { name: 'PlayStation Plus Premium (Annual)', category: 'gaming', defaultPrice: 13.33, color: '#003791' },  // $159.99/yr
+  { name: 'Nintendo Switch Online (Annual)', category: 'gaming', defaultPrice: 1.67, color: '#E60012' },  // $19.99/yr
+  { name: 'Nintendo Switch Online + Expansion (Annual)', category: 'gaming', defaultPrice: 4.17, color: '#E60012' },  // $49.99/yr
+
+  // === NEWS & MEDIA ===
+  { name: 'Apple News+', category: 'news', defaultPrice: 12.99, color: '#FA243C' },
+  { name: 'Apple Fitness+', category: 'health', defaultPrice: 9.99, color: '#A2D729' },
+  { name: 'The Athletic', category: 'news', defaultPrice: 9.99, color: '#2B2B2B' },
+  { name: 'Washington Post', category: 'news', defaultPrice: 12.00, color: '#000000' },
+  { name: 'New York Times (All Access)', category: 'news', defaultPrice: 25.00, color: '#000000' },
+  { name: 'New York Times (Digital Basic)', category: 'news', defaultPrice: 4.25, color: '#000000' },
 ];
