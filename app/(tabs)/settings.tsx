@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { Colors, Spacing, FontSize, BorderRadius, BETA_CODE } from '../../constants/theme';
+import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
 import { useApp } from '../../context/AppContext';
 
 export default function Settings() {
@@ -10,14 +10,12 @@ export default function Settings() {
   const [betaInput, setBetaInput] = useState('');
   const [betaError, setBetaError] = useState('');
   const [betaSuccess, setBetaSuccess] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'free' | 'monthly' | 'yearly'>('free');
 
   const handleBetaActivate = () => {
     if (activateBeta(betaInput)) {
       setBetaSuccess(true);
       setBetaError('');
-      if (Platform.OS === 'web') {
-        // Web doesn't have Alert
-      }
     } else {
       setBetaError('Invalid beta code. Please try again.');
       setBetaSuccess(false);
@@ -26,6 +24,7 @@ export default function Settings() {
 
   const monthlySpend = getTotalMonthlySpend();
   const yearlySpend = monthlySpend * 12;
+  const currentPlan = isBetaUser ? 'Beta Tester (Pro)' : 'Free';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,21 +33,147 @@ export default function Settings() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
-        {/* Beta Access */}
-        <View style={styles.sectionCard}>
+        {/* ==================== PRICING TIERS ==================== */}
+        <View style={styles.card}>
+          <View style={styles.sectionHeader}>
+            <Feather name="star" size={20} color={Colors.warning} />
+            <Text style={styles.sectionTitle}>Choose Your Plan</Text>
+          </View>
+
+          {isBetaUser ? (
+            <View style={styles.betaActive}>
+              <Feather name="check-circle" size={24} color={Colors.success} />
+              <Text style={styles.betaActiveText}>Beta Tester — All Pro features unlocked</Text>
+              <Text style={styles.betaActiveDesc}>Thank you for testing Drift! You have full access to everything.</Text>
+            </View>
+          ) : (
+            <View style={styles.plansContainer}>
+              {/* Free Tier */}
+              <TouchableOpacity
+                style={[styles.planCard, selectedPlan === 'free' && styles.planCardSelected]}
+                onPress={() => setSelectedPlan('free')}
+              >
+                <View style={styles.planHeader}>
+                  <Text style={styles.planName}>Free</Text>
+                  <Text style={styles.planPrice}>$0</Text>
+                </View>
+                <View style={styles.planFeatures}>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Track up to 5 services</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Monthly spend dashboard</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>What You Missed history</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="x" size={14} color={Colors.textMuted} />
+                    <Text style={[styles.planFeatureText, { color: Colors.textMuted }]}>Unlimited tracking</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="x" size={14} color={Colors.textMuted} />
+                    <Text style={[styles.planFeatureText, { color: Colors.textMuted }]}>Weekly digest alerts</Text>
+                  </View>
+                </View>
+                {selectedPlan === 'free' && <View style={styles.currentBadge}><Text style={styles.currentBadgeText}>Current Plan</Text></View>}
+              </TouchableOpacity>
+
+              {/* Monthly Pro */}
+              <TouchableOpacity
+                style={[styles.planCard, styles.planCardPro, selectedPlan === 'monthly' && styles.planCardSelected]}
+                onPress={() => setSelectedPlan('monthly')}
+              >
+                <View style={styles.popularTag}>
+                  <Text style={styles.popularTagText}>MOST POPULAR</Text>
+                </View>
+                <View style={styles.planHeader}>
+                  <Text style={styles.planName}>Pro Monthly</Text>
+                  <View>
+                    <Text style={styles.planPrice}>$3<Text style={styles.planPriceSub}>/mo</Text></Text>
+                  </View>
+                </View>
+                <View style={styles.planFeatures}>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Unlimited service tracking</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Full change history</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Weekly digest alerts</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Alternative recommendations</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Export reports</Text>
+                  </View>
+                </View>
+                <TouchableOpacity style={styles.subscribeBtnPro}>
+                  <Text style={styles.subscribeBtnText}>Subscribe — $3/month</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+
+              {/* Yearly Pro */}
+              <TouchableOpacity
+                style={[styles.planCard, styles.planCardYearly, selectedPlan === 'yearly' && styles.planCardSelected]}
+                onPress={() => setSelectedPlan('yearly')}
+              >
+                <View style={styles.saveBadge}>
+                  <Text style={styles.saveBadgeText}>SAVE 58%</Text>
+                </View>
+                <View style={styles.planHeader}>
+                  <Text style={styles.planName}>Pro Annual</Text>
+                  <View>
+                    <Text style={styles.planPrice}>$15<Text style={styles.planPriceSub}>/yr</Text></Text>
+                    <Text style={styles.planPriceEquiv}>= $1.25/mo</Text>
+                  </View>
+                </View>
+                <View style={styles.planFeatures}>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Everything in Pro Monthly</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Save $21/year vs monthly</Text>
+                  </View>
+                  <View style={styles.planFeature}>
+                    <Feather name="check" size={14} color={Colors.success} />
+                    <Text style={styles.planFeatureText}>Priority feature access</Text>
+                  </View>
+                </View>
+                <TouchableOpacity style={styles.subscribeBtnYearly}>
+                  <Text style={styles.subscribeBtnText}>Subscribe — $15/year</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        {/* ==================== BETA ACCESS ==================== */}
+        <View style={styles.card}>
           <View style={styles.sectionHeader}>
             <Feather name="zap" size={20} color={Colors.primary} />
             <Text style={styles.sectionTitle}>Beta Access</Text>
           </View>
           {isBetaUser ? (
-            <View style={styles.betaActive}>
-              <Feather name="check-circle" size={24} color={Colors.success} />
-              <Text style={styles.betaActiveText}>Beta access activated</Text>
-              <Text style={styles.betaActiveDesc}>All Pro features unlocked. Thank you for testing!</Text>
+            <View style={styles.betaSmall}>
+              <Feather name="check-circle" size={18} color={Colors.success} />
+              <Text style={styles.betaSmallText}>Beta activated — all Pro features unlocked</Text>
             </View>
           ) : (
             <>
-              <Text style={styles.betaDesc}>Enter your beta code to unlock all Pro features for free during the testing period.</Text>
+              <Text style={styles.betaDesc}>Have a beta code? Enter it to unlock all Pro features for free during testing.</Text>
               <View style={styles.betaInputRow}>
                 <TextInput
                   style={styles.betaInput}
@@ -67,13 +192,13 @@ export default function Settings() {
                 </TouchableOpacity>
               </View>
               {betaError ? <Text style={styles.betaError}>{betaError}</Text> : null}
-              {betaSuccess ? <Text style={styles.betaSuccessText}>Beta activated! Enjoy all Pro features.</Text> : null}
+              {betaSuccess ? <Text style={styles.betaSuccessText}>Beta activated! All Pro features unlocked.</Text> : null}
             </>
           )}
         </View>
 
-        {/* Account Summary */}
-        <View style={styles.sectionCard}>
+        {/* ==================== ACCOUNT SUMMARY ==================== */}
+        <View style={styles.card}>
           <View style={styles.sectionHeader}>
             <Feather name="bar-chart-2" size={20} color={Colors.accent} />
             <Text style={styles.sectionTitle}>Your Summary</Text>
@@ -100,49 +225,8 @@ export default function Settings() {
           </View>
         </View>
 
-        {/* Plan Info */}
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeader}>
-            <Feather name="star" size={20} color={Colors.warning} />
-            <Text style={styles.sectionTitle}>Your Plan</Text>
-          </View>
-          <View style={styles.planInfo}>
-            <Text style={styles.planName}>{isBetaUser ? 'Beta Tester (Pro)' : 'Free'}</Text>
-            <Text style={styles.planDesc}>
-              {isBetaUser
-                ? 'Unlimited services, full change history, all features unlocked.'
-                : 'Track up to 5 services. Upgrade to Pro for unlimited tracking and advanced features.'}
-            </Text>
-            {!isBetaUser && (
-              <View style={styles.planFeatures}>
-                <Text style={styles.planFeatureTitle}>Pro features include:</Text>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={Colors.success} />
-                  <Text style={styles.featureText}>Unlimited service tracking</Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={Colors.success} />
-                  <Text style={styles.featureText}>Full change history</Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={Colors.success} />
-                  <Text style={styles.featureText}>Weekly digest notifications</Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={Colors.success} />
-                  <Text style={styles.featureText}>Alternative recommendations</Text>
-                </View>
-                <View style={styles.featureItem}>
-                  <Feather name="check" size={14} color={Colors.success} />
-                  <Text style={styles.featureText}>Export reports</Text>
-                </View>
-              </View>
-            )}
-          </View>
-        </View>
-
         {/* About */}
-        <View style={styles.sectionCard}>
+        <View style={styles.card}>
           <View style={styles.sectionHeader}>
             <Feather name="info" size={20} color={Colors.textSecondary} />
             <Text style={styles.sectionTitle}>About Drift</Text>
@@ -165,9 +249,38 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.md, paddingBottom: Spacing.sm },
   title: { fontSize: FontSize.xxl, fontWeight: '800', color: Colors.text },
   content: { paddingHorizontal: Spacing.lg },
-  sectionCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.lg, marginBottom: Spacing.md, borderWidth: 1, borderColor: Colors.surfaceBorder },
+  card: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.lg, marginBottom: Spacing.md, borderWidth: 1, borderColor: Colors.surfaceBorder },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.md },
   sectionTitle: { fontSize: FontSize.lg, fontWeight: '700', color: Colors.text },
+  // Plans
+  plansContainer: { gap: Spacing.md },
+  planCard: { backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.md, padding: Spacing.lg, borderWidth: 2, borderColor: Colors.surfaceBorder, position: 'relative', overflow: 'hidden' },
+  planCardPro: { borderColor: Colors.primary + '44' },
+  planCardYearly: { borderColor: Colors.accent + '44' },
+  planCardSelected: { borderColor: Colors.primary },
+  planHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md },
+  planName: { fontSize: FontSize.lg, fontWeight: '700', color: Colors.text },
+  planPrice: { fontSize: FontSize.xxl, fontWeight: '800', color: Colors.text },
+  planPriceSub: { fontSize: FontSize.md, fontWeight: '400', color: Colors.textSecondary },
+  planPriceEquiv: { fontSize: FontSize.xs, color: Colors.accent, textAlign: 'right', marginTop: 2 },
+  planFeatures: { gap: Spacing.xs },
+  planFeature: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  planFeatureText: { color: Colors.textSecondary, fontSize: FontSize.sm },
+  popularTag: { position: 'absolute', top: 0, right: 0, backgroundColor: Colors.primary, paddingHorizontal: Spacing.sm, paddingVertical: 2, borderBottomLeftRadius: BorderRadius.sm },
+  popularTagText: { color: Colors.white, fontSize: 9, fontWeight: '800', letterSpacing: 1 },
+  saveBadge: { position: 'absolute', top: 0, right: 0, backgroundColor: Colors.accent, paddingHorizontal: Spacing.sm, paddingVertical: 2, borderBottomLeftRadius: BorderRadius.sm },
+  saveBadgeText: { color: Colors.black, fontSize: 9, fontWeight: '800', letterSpacing: 1 },
+  currentBadge: { marginTop: Spacing.md, alignSelf: 'center', backgroundColor: Colors.surfaceBorder, paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs, borderRadius: BorderRadius.full },
+  currentBadgeText: { color: Colors.textSecondary, fontSize: FontSize.xs, fontWeight: '600' },
+  subscribeBtnPro: { backgroundColor: Colors.primary, paddingVertical: Spacing.md, borderRadius: BorderRadius.md, alignItems: 'center', marginTop: Spacing.md },
+  subscribeBtnYearly: { backgroundColor: Colors.accent, paddingVertical: Spacing.md, borderRadius: BorderRadius.md, alignItems: 'center', marginTop: Spacing.md },
+  subscribeBtnText: { color: Colors.white, fontSize: FontSize.md, fontWeight: '700' },
+  // Beta
+  betaActive: { alignItems: 'center', paddingVertical: Spacing.md },
+  betaActiveText: { color: Colors.success, fontSize: FontSize.md, fontWeight: '700', marginTop: Spacing.sm },
+  betaActiveDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, marginTop: Spacing.xs, textAlign: 'center' },
+  betaSmall: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  betaSmallText: { color: Colors.success, fontSize: FontSize.sm },
   betaDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.md, lineHeight: 20 },
   betaInputRow: { flexDirection: 'row', gap: Spacing.sm },
   betaInput: { flex: 1, backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.md, padding: Spacing.md, color: Colors.text, fontSize: FontSize.md, borderWidth: 1, borderColor: Colors.surfaceBorder, letterSpacing: 2 },
@@ -175,20 +288,12 @@ const styles = StyleSheet.create({
   betaButtonText: { color: Colors.white, fontWeight: '700', fontSize: FontSize.sm },
   betaError: { color: Colors.danger, fontSize: FontSize.sm, marginTop: Spacing.sm },
   betaSuccessText: { color: Colors.success, fontSize: FontSize.sm, marginTop: Spacing.sm },
-  betaActive: { alignItems: 'center', paddingVertical: Spacing.md },
-  betaActiveText: { color: Colors.success, fontSize: FontSize.md, fontWeight: '700', marginTop: Spacing.sm },
-  betaActiveDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, marginTop: Spacing.xs },
+  // Summary
   summaryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
   summaryItem: { width: '47%', backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.sm, padding: Spacing.md, alignItems: 'center' },
   summaryValue: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.text },
   summaryLabel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2 },
-  planInfo: {},
-  planName: { fontSize: FontSize.lg, fontWeight: '700', color: Colors.primary },
-  planDesc: { fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: Spacing.xs, lineHeight: 20 },
-  planFeatures: { marginTop: Spacing.md },
-  planFeatureTitle: { fontSize: FontSize.sm, fontWeight: '600', color: Colors.text, marginBottom: Spacing.sm },
-  featureItem: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.xs },
-  featureText: { color: Colors.textSecondary, fontSize: FontSize.sm },
+  // About
   aboutText: { color: Colors.textSecondary, fontSize: FontSize.sm, lineHeight: 20 },
   version: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: Spacing.md },
   credit: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: Spacing.xs },

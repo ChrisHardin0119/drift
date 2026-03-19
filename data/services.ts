@@ -211,4 +211,113 @@ export const popularServices = [
   { name: 'Washington Post', category: 'news', defaultPrice: 12.00, color: '#000000' },
   { name: 'New York Times (All Access)', category: 'news', defaultPrice: 25.00, color: '#000000' },
   { name: 'New York Times (Digital Basic)', category: 'news', defaultPrice: 4.25, color: '#000000' },
+
+  // === LIVE TV ===
+  { name: 'YouTube TV', category: 'streaming', defaultPrice: 82.99, color: '#FF0000' },
+  { name: 'FuboTV (Entertainment)', category: 'streaming', defaultPrice: 89.99, color: '#1BB58A' },
+  { name: 'FuboTV (Choice)', category: 'streaming', defaultPrice: 94.99, color: '#1BB58A' },
+  { name: 'FuboTV (Ultimate)', category: 'streaming', defaultPrice: 124.99, color: '#1BB58A' },
+  { name: 'FuboTV (Sports + News)', category: 'streaming', defaultPrice: 55.99, color: '#1BB58A' },
+  { name: 'Sling TV (Orange)', category: 'streaming', defaultPrice: 45.99, color: '#F57C1F' },
+  { name: 'Sling TV (Blue)', category: 'streaming', defaultPrice: 45.99, color: '#0074E4' },
+  { name: 'Sling TV (Orange + Blue)', category: 'streaming', defaultPrice: 60.99, color: '#F57C1F' },
+  { name: 'Philo (Essential)', category: 'streaming', defaultPrice: 25.00, color: '#4E2A84' },
+  { name: 'Philo (Bundle+)', category: 'streaming', defaultPrice: 33.00, color: '#4E2A84' },
+  { name: 'DIRECTV STREAM (Entertainment)', category: 'streaming', defaultPrice: 79.99, color: '#00A8E0' },
+
+  // === FOOD DELIVERY ===
+  { name: 'DoorDash DashPass', category: 'other', defaultPrice: 9.99, color: '#FF3008' },
+  { name: 'Uber One', category: 'other', defaultPrice: 9.99, color: '#000000' },
+  { name: 'Grubhub+', category: 'other', defaultPrice: 9.99, color: '#F63440' },
+  { name: 'Instacart+', category: 'other', defaultPrice: 9.99, color: '#43B02A' },
+
+  // === DATING ===
+  { name: 'Tinder Plus', category: 'other', defaultPrice: 24.99, color: '#FD5068' },
+  { name: 'Tinder Gold', category: 'other', defaultPrice: 39.99, color: '#FFD700' },
+  { name: 'Tinder Platinum', category: 'other', defaultPrice: 49.99, color: '#C0C0C0' },
+  { name: 'Bumble Boost', category: 'other', defaultPrice: 14.99, color: '#FFC629' },
+  { name: 'Bumble Premium', category: 'other', defaultPrice: 29.99, color: '#FFC629' },
+  { name: 'Hinge+ (HingeX)', category: 'other', defaultPrice: 29.99, color: '#77303F' },
+
+  // === COMMUNICATION ===
+  { name: 'Discord Nitro Basic', category: 'productivity', defaultPrice: 2.99, color: '#5865F2' },
+  { name: 'Discord Nitro', category: 'productivity', defaultPrice: 9.99, color: '#5865F2' },
+  { name: 'Zoom Pro', category: 'productivity', defaultPrice: 13.33, color: '#2D8CFF' },
+  { name: 'Slack Pro', category: 'productivity', defaultPrice: 8.75, color: '#4A154B' },
+
+  // === FITNESS & WELLNESS ===
+  { name: 'Peloton App', category: 'health', defaultPrice: 12.99, color: '#D40000' },
+  { name: 'Peloton App+', category: 'health', defaultPrice: 24.00, color: '#D40000' },
+  { name: 'Calm', category: 'health', defaultPrice: 14.99, color: '#4A90D9' },
+  { name: 'Noom (Weight)', category: 'health', defaultPrice: 17.42, color: '#00C48C' },
+  { name: 'MyFitnessPal Premium', category: 'health', defaultPrice: 19.99, color: '#0070E0' },
+
+  // === PASSWORD MANAGERS & SECURITY ===
+  { name: '1Password (Individual)', category: 'vpn', defaultPrice: 2.99, color: '#0094FF' },
+  { name: '1Password (Family)', category: 'vpn', defaultPrice: 4.99, color: '#0094FF' },
+  { name: 'Dashlane Premium', category: 'vpn', defaultPrice: 3.75, color: '#0E353D' },
+  { name: 'Bitwarden Premium', category: 'vpn', defaultPrice: 0.83, color: '#175DDC' },
+  { name: 'Surfshark VPN', category: 'vpn', defaultPrice: 1.99, color: '#178BF1' },
+  { name: 'CyberGhost VPN', category: 'vpn', defaultPrice: 2.19, color: '#FDCB58' },
+
+  // === GAMING (additional) ===
+  { name: 'EA Play', category: 'gaming', defaultPrice: 5.99, color: '#000000' },
+  { name: 'Ubisoft+ (Standard)', category: 'gaming', defaultPrice: 7.99, color: '#000000' },
+  { name: 'Ubisoft+ (Premium)', category: 'gaming', defaultPrice: 17.99, color: '#000000' },
+  { name: 'Apple Arcade', category: 'gaming', defaultPrice: 6.99, color: '#000000' },
+  { name: 'GeForce NOW (Performance)', category: 'gaming', defaultPrice: 9.99, color: '#76B900' },
+  { name: 'GeForce NOW (Ultimate)', category: 'gaming', defaultPrice: 19.99, color: '#76B900' },
+
+  // === DEV TOOLS ===
+  { name: 'GitHub Pro', category: 'productivity', defaultPrice: 4.00, color: '#24292E' },
+  { name: 'GitHub Team', category: 'productivity', defaultPrice: 4.00, color: '#24292E' },
+  { name: 'GitHub Copilot Individual', category: 'ai', defaultPrice: 10.00, color: '#24292E' },
+  { name: 'GitHub Copilot Business', category: 'ai', defaultPrice: 19.00, color: '#24292E' },
+  { name: 'Vercel Pro', category: 'productivity', defaultPrice: 20.00, color: '#000000' },
+  { name: 'Figma Professional', category: 'productivity', defaultPrice: 16.00, color: '#F24E1E' },
+  { name: 'Figma Organization', category: 'productivity', defaultPrice: 45.00, color: '#F24E1E' },
+  { name: 'Railway Pro', category: 'productivity', defaultPrice: 5.00, color: '#0B0D0E' },
+  { name: 'Netlify Pro', category: 'productivity', defaultPrice: 19.00, color: '#00C7B7' },
+
+  // === WEBSITE/ECOMMERCE ===
+  { name: 'Shopify Starter', category: 'productivity', defaultPrice: 5.00, color: '#96BF48' },
+  { name: 'Shopify Basic', category: 'productivity', defaultPrice: 29.00, color: '#96BF48' },
+  { name: 'Shopify Standard', category: 'productivity', defaultPrice: 79.00, color: '#96BF48' },
+  { name: 'Squarespace Personal', category: 'productivity', defaultPrice: 16.00, color: '#000000' },
+  { name: 'Squarespace Business', category: 'productivity', defaultPrice: 33.00, color: '#000000' },
+  { name: 'Wix Light', category: 'productivity', defaultPrice: 17.00, color: '#0C6EFC' },
+  { name: 'Wix Core', category: 'productivity', defaultPrice: 29.00, color: '#0C6EFC' },
+
+  // === EDUCATION ===
+  { name: 'MasterClass (Individual)', category: 'streaming', defaultPrice: 10.00, color: '#000000' },
+  { name: 'MasterClass (Duo)', category: 'streaming', defaultPrice: 15.00, color: '#000000' },
+  { name: 'MasterClass (Family)', category: 'streaming', defaultPrice: 20.00, color: '#000000' },
+  { name: 'Coursera Plus', category: 'streaming', defaultPrice: 49.00, color: '#0056D2' },
+  { name: 'Skillshare', category: 'streaming', defaultPrice: 13.99, color: '#00FF84' },
+  { name: 'Brilliant', category: 'streaming', defaultPrice: 24.99, color: '#000000' },
+  { name: 'Duolingo Super', category: 'streaming', defaultPrice: 12.99, color: '#58CC02' },
+
+  // === READING ===
+  { name: 'Scribd', category: 'streaming', defaultPrice: 12.99, color: '#1E7B85' },
+  { name: 'Medium', category: 'streaming', defaultPrice: 5.00, color: '#000000' },
+  { name: 'Blinkist', category: 'streaming', defaultPrice: 12.49, color: '#1CB06B' },
+
+  // === SMART HOME ===
+  { name: 'Ring Protect Basic', category: 'other', defaultPrice: 3.99, color: '#1C9AD6' },
+  { name: 'Ring Protect Plus', category: 'other', defaultPrice: 10.00, color: '#1C9AD6' },
+  { name: 'Ring Protect Pro', category: 'other', defaultPrice: 20.00, color: '#1C9AD6' },
+  { name: 'Nest Aware', category: 'other', defaultPrice: 8.00, color: '#4285F4' },
+  { name: 'Nest Aware Plus', category: 'other', defaultPrice: 15.00, color: '#4285F4' },
+
+  // === MEMBERSHIPS ===
+  { name: 'Costco Gold Star', category: 'other', defaultPrice: 5.42, color: '#E31837' },
+  { name: 'Costco Executive', category: 'other', defaultPrice: 10.83, color: '#E31837' },
+  { name: 'Sam\'s Club', category: 'other', defaultPrice: 4.17, color: '#0060A9' },
+  { name: 'Sam\'s Club Plus', category: 'other', defaultPrice: 9.17, color: '#0060A9' },
+  { name: 'AAA Basic', category: 'other', defaultPrice: 5.08, color: '#003087' },
+
+  // === RADIO/PODCAST ===
+  { name: 'SiriusXM Music Showcase', category: 'music', defaultPrice: 10.99, color: '#0000EB' },
+  { name: 'SiriusXM All Access (Streaming)', category: 'music', defaultPrice: 12.99, color: '#0000EB' },
+  { name: 'SiriusXM Platinum (Car + Streaming)', category: 'music', defaultPrice: 23.99, color: '#0000EB' },
 ];
