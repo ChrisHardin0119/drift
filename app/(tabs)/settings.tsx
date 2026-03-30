@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Platform } from 'react-native';
+﻿import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Platform, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
 import { useApp } from '../../context/AppContext';
+import { SUBSCRIPTION_SKUS, isIAPAvailable, getDisplayPrice } from '../../services/subscriptions';
 
 export default function Settings() {
-  const { isBetaUser, activateBeta, services, getTotalMonthlySpend } = useApp();
+  const {
+    isBetaUser, activateBeta, services, getTotalMonthlySpend,
+    isProUser, currentPlan, hasFullAccess,
+    purchaseSubscription, restoreSubscriptions,
+    availableSubscriptions, subscriptionLoading, subscriptionError,
+  } = useApp();
   const [betaInput, setBetaInput] = useState('');
   const [betaError, setBetaError] = useState('');
   const [betaSuccess, setBetaSuccess] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'free' | 'monthly' | 'yearly'>('free');
 
   const handleBetaActivate = () => {
     if (activateBeta(betaInput)) {
@@ -22,9 +27,39 @@ export default function Settings() {
     }
   };
 
+  const handlePurchase = async (sku: string) => {
+    if (!isIAPAvailable()) {
+      Alert.alert(
+        'Not Available',
+        'Subscriptions are available when you install Drift from the Google Play Store or Apple App Store. The web version uses beta codes for access.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    await purchaseSubscription(sku);
+  };
+
+  const handleRestore = async () => {
+    await restoreSubscriptions();
+    Alert.alert('Restore Complete', 'Your purchases have been restored.', [{ text: 'OK' }]);
+  };
+
+  // Get store prices if available, fallback to defaults
+  const getPrice = (sku: string, fallback: string): string => {
+    const sub = availableSubscriptions.find(s => s.productId === sku);
+    if (sub) return getDisplayPrice(sub);
+    return fallback;
+  };
+
   const monthlySpend = getTotalMonthlySpend();
   const yearlySpend = monthlySpend * 12;
-  const currentPlan = isBetaUser ? 'Beta Tester (Pro)' : 'Free';
+
+  const getPlanLabel = () => {
+    if (isBetaUser) return 'Beta Tester (Pro)';
+    if (currentPlan === 'pro_yearly') return 'Pro Annual';
+    if (currentPlan === 'pro_monthly') return 'Pro Monthly';
+    return 'Free';
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,19 +75,33 @@ export default function Settings() {
             <Text style={styles.sectionTitle}>Choose Your Plan</Text>
           </View>
 
-          {isBetaUser ? (
+          {hasFullAccess ? (
             <View style={styles.betaActive}>
               <Feather name="check-circle" size={24} color={Colors.success} />
-              <Text style={styles.betaActiveText}>Beta Tester — All Pro features unlocked</Text>
-              <Text style={styles.betaActiveDesc}>Thank you for testing Drift! You have full access to everything.</Text>
+              <Text style={styles.betaActiveText}>
+                {isBetaUser ? 'Beta Tester' : getPlanLabel()} â€” All Pro features unlocked
+              </Text>
+              <Text style={styles.betaActiveDesc}>
+                {isBetaUser
+                  ? 'Thank you for testing Drift! You have full access to everything.'
+                  : 'Your subscription is active. Enjoy unlimited tracking!'}
+              </Text>
+              {isProUser && !isBetaUser && (
+                <TouchableOpacity style={styles.manageBtn} onPress={() => {
+                  Alert.alert(
+                    'Manage Subscription',
+                    'To manage or cancel your subscription, go to Google Play Store > Menu > Subscriptions.',
+                    [{ text: 'OK' }]
+                  );
+                }}>
+                  <Text style={styles.manageBtnText}>Manage Subscription</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
             <View style={styles.plansContainer}>
               {/* Free Tier */}
-              <TouchableOpacity
-                style={[styles.planCard, selectedPlan === 'free' && styles.planCardSelected]}
-                onPress={() => setSelectedPlan('free')}
-              >
+              <View style={[styles.planCard]}>
                 <View style={styles.planHeader}>
                   <Text style={styles.planName}>Free</Text>
                   <Text style={styles.planPrice}>$0</Text>
@@ -79,21 +128,20 @@ export default function Settings() {
                     <Text style={[styles.planFeatureText, { color: Colors.textMuted }]}>Weekly digest alerts</Text>
                   </View>
                 </View>
-                {selectedPlan === 'free' && <View style={styles.currentBadge}><Text style={styles.currentBadgeText}>Current Plan</Text></View>}
-              </TouchableOpacity>
+                <View style={styles.currentBadge}><Text style={styles.currentBadgeText}>Current Plan</Text></View>
+              </View>
 
               {/* Monthly Pro */}
-              <TouchableOpacity
-                style={[styles.planCard, styles.planCardPro, selectedPlan === 'monthly' && styles.planCardSelected]}
-                onPress={() => setSelectedPlan('monthly')}
-              >
+              <View style={[styles.planCard, styles.planCardPro]}>
                 <View style={styles.popularTag}>
                   <Text style={styles.popularTagText}>MOST POPULAR</Text>
                 </View>
                 <View style={styles.planHeader}>
                   <Text style={styles.planName}>Pro Monthly</Text>
                   <View>
-                    <Text style={styles.planPrice}>$3<Text style={styles.planPriceSub}>/mo</Text></Text>
+                    <Text style={styles.planPrice}>
+                      {getPrice(SUBSCRIPTION_SKUS.PRO_MONTHLY, '$3')}<Text style={styles.planPriceSub}>/mo</Text>
+                    </Text>
                   </View>
                 </View>
                 <View style={styles.planFeatures}>
@@ -118,23 +166,32 @@ export default function Settings() {
                     <Text style={styles.planFeatureText}>Export reports</Text>
                   </View>
                 </View>
-                <TouchableOpacity style={styles.subscribeBtnPro}>
-                  <Text style={styles.subscribeBtnText}>Subscribe — $3/month</Text>
+                <TouchableOpacity
+                  style={[styles.subscribeBtnPro, subscriptionLoading && { opacity: 0.6 }]}
+                  onPress={() => handlePurchase(SUBSCRIPTION_SKUS.PRO_MONTHLY)}
+                  disabled={subscriptionLoading}
+                >
+                  {subscriptionLoading ? (
+                    <ActivityIndicator color={Colors.white} />
+                  ) : (
+                    <Text style={styles.subscribeBtnText}>
+                      Subscribe â€” {getPrice(SUBSCRIPTION_SKUS.PRO_MONTHLY, '$3/month')}
+                    </Text>
+                  )}
                 </TouchableOpacity>
-              </TouchableOpacity>
+              </View>
 
               {/* Yearly Pro */}
-              <TouchableOpacity
-                style={[styles.planCard, styles.planCardYearly, selectedPlan === 'yearly' && styles.planCardSelected]}
-                onPress={() => setSelectedPlan('yearly')}
-              >
+              <View style={[styles.planCard, styles.planCardYearly]}>
                 <View style={styles.saveBadge}>
                   <Text style={styles.saveBadgeText}>SAVE 58%</Text>
                 </View>
                 <View style={styles.planHeader}>
                   <Text style={styles.planName}>Pro Annual</Text>
                   <View>
-                    <Text style={styles.planPrice}>$15<Text style={styles.planPriceSub}>/yr</Text></Text>
+                    <Text style={styles.planPrice}>
+                      {getPrice(SUBSCRIPTION_SKUS.PRO_YEARLY, '$15')}<Text style={styles.planPriceSub}>/yr</Text>
+                    </Text>
                     <Text style={styles.planPriceEquiv}>= $1.25/mo</Text>
                   </View>
                 </View>
@@ -152,9 +209,32 @@ export default function Settings() {
                     <Text style={styles.planFeatureText}>Priority feature access</Text>
                   </View>
                 </View>
-                <TouchableOpacity style={styles.subscribeBtnYearly}>
-                  <Text style={styles.subscribeBtnText}>Subscribe — $15/year</Text>
+                <TouchableOpacity
+                  style={[styles.subscribeBtnYearly, subscriptionLoading && { opacity: 0.6 }]}
+                  onPress={() => handlePurchase(SUBSCRIPTION_SKUS.PRO_YEARLY)}
+                  disabled={subscriptionLoading}
+                >
+                  {subscriptionLoading ? (
+                    <ActivityIndicator color={Colors.white} />
+                  ) : (
+                    <Text style={styles.subscribeBtnText}>
+                      Subscribe â€” {getPrice(SUBSCRIPTION_SKUS.PRO_YEARLY, '$15/year')}
+                    </Text>
+                  )}
                 </TouchableOpacity>
+              </View>
+
+              {/* Error message */}
+              {subscriptionError && (
+                <View style={styles.errorBanner}>
+                  <Feather name="alert-circle" size={16} color={Colors.danger} />
+                  <Text style={styles.errorText}>{subscriptionError}</Text>
+                </View>
+              )}
+
+              {/* Restore purchases */}
+              <TouchableOpacity style={styles.restoreBtn} onPress={handleRestore} disabled={subscriptionLoading}>
+                <Text style={styles.restoreBtnText}>Restore Purchases</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -169,7 +249,7 @@ export default function Settings() {
           {isBetaUser ? (
             <View style={styles.betaSmall}>
               <Feather name="check-circle" size={18} color={Colors.success} />
-              <Text style={styles.betaSmallText}>Beta activated — all Pro features unlocked</Text>
+              <Text style={styles.betaSmallText}>Beta activated â€” all Pro features unlocked</Text>
             </View>
           ) : (
             <>
@@ -232,10 +312,10 @@ export default function Settings() {
             <Text style={styles.sectionTitle}>About Drift</Text>
           </View>
           <Text style={styles.aboutText}>
-            Drift watches your digital subscriptions for changes you'd otherwise miss — price creeps, feature removals, privacy policy shifts, and more.
+            Drift watches your digital subscriptions for changes you'd otherwise miss â€” price creeps, feature removals, privacy policy shifts, and more.
           </Text>
-          <Text style={styles.version}>Version 1.0.0 (Beta)</Text>
-          <Text style={styles.credit}>Built by Chris Hardin</Text>
+          <Text style={styles.version}>Version 1.1.0</Text>
+          <Text style={styles.credit}>Built by Variosity Applications</Text>
         </View>
 
         <View style={{ height: Spacing.xxl * 2 }} />
@@ -254,43 +334,48 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: FontSize.lg, fontWeight: '700', color: Colors.text },
   // Plans
   plansContainer: { gap: Spacing.md },
-  planCard: { backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.md, padding: Spacing.lg, borderWidth: 2, borderColor: Colors.surfaceBorder, position: 'relative', overflow: 'hidden' },
+  planCard: { backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.md, padding: Spacing.lg, borderWidth: 2, borderColor: Colors.surfaceBorder, position: 'relative' as const, overflow: 'hidden' as const },
   planCardPro: { borderColor: Colors.primary + '44' },
   planCardYearly: { borderColor: Colors.accent + '44' },
-  planCardSelected: { borderColor: Colors.primary },
-  planHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md },
+  planHeader: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const, marginBottom: Spacing.md },
   planName: { fontSize: FontSize.lg, fontWeight: '700', color: Colors.text },
   planPrice: { fontSize: FontSize.xxl, fontWeight: '800', color: Colors.text },
   planPriceSub: { fontSize: FontSize.md, fontWeight: '400', color: Colors.textSecondary },
-  planPriceEquiv: { fontSize: FontSize.xs, color: Colors.accent, textAlign: 'right', marginTop: 2 },
+  planPriceEquiv: { fontSize: FontSize.xs, color: Colors.accent, textAlign: 'right' as const, marginTop: 2 },
   planFeatures: { gap: Spacing.xs },
-  planFeature: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  planFeature: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: Spacing.sm },
   planFeatureText: { color: Colors.textSecondary, fontSize: FontSize.sm },
-  popularTag: { position: 'absolute', top: 0, right: 0, backgroundColor: Colors.primary, paddingHorizontal: Spacing.sm, paddingVertical: 2, borderBottomLeftRadius: BorderRadius.sm },
+  popularTag: { position: 'absolute' as const, top: 0, right: 0, backgroundColor: Colors.primary, paddingHorizontal: Spacing.sm, paddingVertical: 2, borderBottomLeftRadius: BorderRadius.sm },
   popularTagText: { color: Colors.white, fontSize: 9, fontWeight: '800', letterSpacing: 1 },
-  saveBadge: { position: 'absolute', top: 0, right: 0, backgroundColor: Colors.accent, paddingHorizontal: Spacing.sm, paddingVertical: 2, borderBottomLeftRadius: BorderRadius.sm },
+  saveBadge: { position: 'absolute' as const, top: 0, right: 0, backgroundColor: Colors.accent, paddingHorizontal: Spacing.sm, paddingVertical: 2, borderBottomLeftRadius: BorderRadius.sm },
   saveBadgeText: { color: Colors.black, fontSize: 9, fontWeight: '800', letterSpacing: 1 },
-  currentBadge: { marginTop: Spacing.md, alignSelf: 'center', backgroundColor: Colors.surfaceBorder, paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs, borderRadius: BorderRadius.full },
+  currentBadge: { marginTop: Spacing.md, alignSelf: 'center' as const, backgroundColor: Colors.surfaceBorder, paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs, borderRadius: BorderRadius.full },
   currentBadgeText: { color: Colors.textSecondary, fontSize: FontSize.xs, fontWeight: '600' },
-  subscribeBtnPro: { backgroundColor: Colors.primary, paddingVertical: Spacing.md, borderRadius: BorderRadius.md, alignItems: 'center', marginTop: Spacing.md },
-  subscribeBtnYearly: { backgroundColor: Colors.accent, paddingVertical: Spacing.md, borderRadius: BorderRadius.md, alignItems: 'center', marginTop: Spacing.md },
+  subscribeBtnPro: { backgroundColor: Colors.primary, paddingVertical: Spacing.md, borderRadius: BorderRadius.md, alignItems: 'center' as const, marginTop: Spacing.md },
+  subscribeBtnYearly: { backgroundColor: Colors.accent, paddingVertical: Spacing.md, borderRadius: BorderRadius.md, alignItems: 'center' as const, marginTop: Spacing.md },
   subscribeBtnText: { color: Colors.white, fontSize: FontSize.md, fontWeight: '700' },
+  restoreBtn: { alignSelf: 'center' as const, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.lg },
+  restoreBtnText: { color: Colors.textSecondary, fontSize: FontSize.sm, textDecorationLine: 'underline' as const },
+  manageBtn: { marginTop: Spacing.md, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.lg, backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.md },
+  manageBtnText: { color: Colors.textSecondary, fontSize: FontSize.sm },
+  errorBanner: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: Spacing.sm, backgroundColor: Colors.danger + '15', padding: Spacing.md, borderRadius: BorderRadius.sm },
+  errorText: { color: Colors.danger, fontSize: FontSize.sm, flex: 1 },
   // Beta
-  betaActive: { alignItems: 'center', paddingVertical: Spacing.md },
+  betaActive: { alignItems: 'center' as const, paddingVertical: Spacing.md },
   betaActiveText: { color: Colors.success, fontSize: FontSize.md, fontWeight: '700', marginTop: Spacing.sm },
-  betaActiveDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, marginTop: Spacing.xs, textAlign: 'center' },
-  betaSmall: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  betaActiveDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, marginTop: Spacing.xs, textAlign: 'center' as const },
+  betaSmall: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: Spacing.sm },
   betaSmallText: { color: Colors.success, fontSize: FontSize.sm },
   betaDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.md, lineHeight: 20 },
-  betaInputRow: { flexDirection: 'row', gap: Spacing.sm },
+  betaInputRow: { flexDirection: 'row' as const, gap: Spacing.sm },
   betaInput: { flex: 1, backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.md, padding: Spacing.md, color: Colors.text, fontSize: FontSize.md, borderWidth: 1, borderColor: Colors.surfaceBorder, letterSpacing: 2 },
-  betaButton: { backgroundColor: Colors.primary, paddingHorizontal: Spacing.lg, borderRadius: BorderRadius.md, justifyContent: 'center' },
+  betaButton: { backgroundColor: Colors.primary, paddingHorizontal: Spacing.lg, borderRadius: BorderRadius.md, justifyContent: 'center' as const },
   betaButtonText: { color: Colors.white, fontWeight: '700', fontSize: FontSize.sm },
   betaError: { color: Colors.danger, fontSize: FontSize.sm, marginTop: Spacing.sm },
   betaSuccessText: { color: Colors.success, fontSize: FontSize.sm, marginTop: Spacing.sm },
   // Summary
-  summaryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
-  summaryItem: { width: '47%', backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.sm, padding: Spacing.md, alignItems: 'center' },
+  summaryGrid: { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: Spacing.sm },
+  summaryItem: { width: '47%', backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.sm, padding: Spacing.md, alignItems: 'center' as const },
   summaryValue: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.text },
   summaryLabel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2 },
   // About

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Drift",
     "slug": "drift",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -23,7 +23,10 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.drift.app"
+      "package": "com.drift.app",
+      "permissions": [
+        "com.android.vending.BILLING"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -31,10 +34,18 @@
       "output": "single"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "react-native-iap"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c3286802-5700-4e07-92a2-f3e9c0af58f2"
+      }
+    },
+    "owner": "chrismhardin"
   }
 }

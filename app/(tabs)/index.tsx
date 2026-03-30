@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -9,7 +9,7 @@ import { SpendWidget } from '../../components/SpendWidget';
 import { ChangeAlert } from '../../components/ChangeAlert';
 
 export default function Dashboard() {
-  const { services, getTotalMonthlySpend, getRecentChanges, isBetaUser } = useApp();
+  const { services, getTotalMonthlySpend, getRecentChanges, isBetaUser, liveChanges, liveStats, liveFeedLoading, refreshLiveFeed } = useApp();
   const router = useRouter();
   const monthlySpend = getTotalMonthlySpend();
   const recentChanges = getRecentChanges();
@@ -100,6 +100,31 @@ export default function Dashboard() {
               )}
             </View>
           </>
+        )}
+
+        {/* Live Feed from Backend */}
+        {liveChanges.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Industry Updates</Text>
+              <TouchableOpacity onPress={refreshLiveFeed}>
+                <Text style={styles.seeAll}>{liveFeedLoading ? 'Refreshing...' : 'Refresh'}</Text>
+              </TouchableOpacity>
+            </View>
+            {liveChanges.slice(0, 5).map((change, i) => (
+              <ChangeAlert
+                key={'live-' + change.id}
+                serviceName={change.service_name}
+                title={change.title}
+                description={change.description}
+                date={change.detected_at?.split('T')[0] || ''}
+                severity={change.severity as 'low' | 'medium' | 'high'}
+                type={change.type as any}
+                oldValue={change.old_value || undefined}
+                newValue={change.new_value || undefined}
+              />
+            ))}
+          </View>
         )}
 
         <TouchableOpacity style={styles.missedBanner} onPress={() => router.push('/(tabs)/history')}>
@@ -282,3 +307,4 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+

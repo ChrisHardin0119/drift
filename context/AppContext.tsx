@@ -1,13 +1,29 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { TrackedService, ServiceChange } from '../data/services';
+import { driftAPI, APIChange, APIStats } from '../services/api';
 import { BETA_CODE } from '../constants/theme';
+import {
+  initIAP,
+  setupPurchaseListeners,
+  removePurchaseListeners,
+  buySubscription,
+  restorePurchases,
+  disconnectIAP,
+  isIAPAvailable,
+  SUBSCRIPTION_SKUS,
+  PlanType,
+} from '../services/subscriptions';
+import type { Subscription } from 'react-native-iap';
 
 interface AppState {
   services: TrackedService[];
   isBetaUser: boolean;
   digestHistory: DigestEntry[];
   onboardingComplete: boolean;
+  isProUser: boolean;
+  currentPlan: PlanType;
 }
 
 export interface DigestEntry {
@@ -27,6 +43,12 @@ interface AppContextType extends AppState {
   getTotalMonthlySpend: () => number;
   getRecentChanges: () => { serviceName: string; change: ServiceChange }[];
   getServiceById: (id: string) => TrackedService | undefined;
+  purchaseSubscription: (sku: string) => Promise<void>;
+  restoreSubscriptions: () => Promise<void>;
+  availableSubscriptions: Subscription[];
+  subscriptionLoading: boolean;
+  subscriptionError: string | null;
+  hasFullAccess: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -41,12 +63,59 @@ export function AppProvider({ children }: { children: ReactNode }) {
     isBetaUser: false,
     digestHistory: [],
     onboardingComplete: false,
+    isProUser: false,
+    currentPlan: 'free',
   });
   const [loaded, setLoaded] = useState(false);
+  const [availableSubscriptions, setAvailableSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
+  const [liveChanges, setLiveChanges] = useState<APIChange[]>([]);
+  const [liveStats, setLiveStats] = useState<APIStats | null>(null);
+  const [liveFeedLoading, setLiveFeedLoading] = useState(false);
 
   useEffect(() => {
     loadState();
   }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    if (!isIAPAvailable()) return;
+
+    const initSubscriptions = async () => {
+      try {
+        const subs = await initIAP();
+        setAvailableSubscriptions(subs);
+
+        setupPurchaseListeners(
+          (purchase) => {
+            const productId = purchase.productId;
+            if (productId === SUBSCRIPTION_SKUS.PRO_MONTHLY) {
+              setState(prev => ({ ...prev, isProUser: true, currentPlan: 'pro_monthly' }));
+            } else if (productId === SUBSCRIPTION_SKUS.PRO_YEARLY) {
+              setState(prev => ({ ...prev, isProUser: true, currentPlan: 'pro_yearly' }));
+            }
+            setSubscriptionLoading(false);
+            setSubscriptionError(null);
+          },
+          (error) => {
+            setSubscriptionLoading(false);
+            if (error.code !== 'E_USER_CANCELLED') {
+              setSubscriptionError(error.message || 'Purchase failed. Please try again.');
+            }
+          }
+        );
+      } catch (err) {
+        console.warn('Failed to init subscriptions:', err);
+      }
+    };
+
+    initSubscriptions();
+
+    return () => {
+      disconnectIAP();
+    };
+  }, [loaded]);
 
   useEffect(() => {
     if (loaded) {
@@ -59,7 +128,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        setState(parsed);
+        setState(prev => ({ ...prev, ...parsed }));
       }
     } catch (e) {
       console.error('Failed to load state:', e);
@@ -104,7 +173,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           date: now,
           type: changeType,
           severity: Math.abs(newPrice - oldPrice) > 3 ? 'high' : Math.abs(newPrice - oldPrice) > 1 ? 'medium' : 'low',
-          title: `Price ${changeType === 'price_increase' ? 'increased' : 'decreased'} ${reason ? '— ' + reason : ''}`,
+          title: `Price ${changeType === 'price_increase' ? 'increased' : 'decreased'} ${reason ? 'â€” ' + reason : ''}`,
           description: `${s.name} changed from $${oldPrice.toFixed(2)}/mo to $${newPrice.toFixed(2)}/mo`,
           oldValue: `$${oldPrice.toFixed(2)}/mo`,
           newValue: `$${newPrice.toFixed(2)}/mo`,
@@ -165,6 +234,67 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const getServiceById = (id: string) => state.services.find(s => s.id === id);
 
+  const purchaseSubscription = async (sku: string) => {
+    if (!isIAPAvailable()) {
+      setSubscriptionError('In-app purchases are only available on Android and iOS.');
+      return;
+    }
+    setSubscriptionLoading(true);
+    setSubscriptionError(null);
+    try {
+      await buySubscription(sku);
+    } catch (err: any) {
+      setSubscriptionLoading(false);
+      if (err?.code !== 'E_USER_CANCELLED') {
+        setSubscriptionError(err?.message || 'Purchase failed.');
+      }
+    }
+  };
+
+  const restoreSubscriptions = async () => {
+    if (!isIAPAvailable()) return;
+    setSubscriptionLoading(true);
+    setSubscriptionError(null);
+    try {
+      const plans = await restorePurchases();
+      const isPro = plans.includes('pro_monthly') || plans.includes('pro_yearly');
+      const plan = plans.includes('pro_yearly') ? 'pro_yearly' : plans.includes('pro_monthly') ? 'pro_monthly' : 'free';
+      setState(prev => ({
+        ...prev,
+        isProUser: isPro,
+        currentPlan: plan,
+      }));
+      setSubscriptionLoading(false);
+    } catch (err: any) {
+      setSubscriptionLoading(false);
+      setSubscriptionError(err?.message || 'Failed to restore purchases.');
+    }
+  };
+
+  const refreshLiveFeed = async () => {
+    setLiveFeedLoading(true);
+    try {
+      const [changes, stats] = await Promise.all([
+        driftAPI.getChanges({ limit: 50 }),
+        driftAPI.getStats(),
+      ]);
+      setLiveChanges(changes);
+      setLiveStats(stats);
+    } catch (err) {
+      console.warn('Failed to fetch live feed:', err);
+      // Silently fail — app still works with local data
+    }
+    setLiveFeedLoading(false);
+  };
+
+  useEffect(() => {
+    if (loaded) {
+      refreshLiveFeed();
+    }
+  }, [loaded]);
+
+  const hasFullAccess = state.isBetaUser || state.isProUser;
+
   return (
     <AppContext.Provider
       value={{
@@ -178,6 +308,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         getTotalMonthlySpend,
         getRecentChanges,
         getServiceById,
+        purchaseSubscription,
+        restoreSubscriptions,
+        availableSubscriptions,
+        subscriptionLoading,
+        subscriptionError,
+        hasFullAccess,
       }}
     >
       {children}
@@ -190,3 +326,8 @@ export const useApp = () => {
   if (!ctx) throw new Error('useApp must be used within AppProvider');
   return ctx;
 };
+
+
+
+
+

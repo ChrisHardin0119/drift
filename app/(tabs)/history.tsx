@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
 import { historicalChanges, getTotalYearlyImpact } from '../../data/historical';
 import { ChangeAlert } from '../../components/ChangeAlert';
+import { useApp } from '../../context/AppContext';
 
 const typeFilters = [
   { id: 'all', label: 'All', icon: 'list' },
@@ -128,3 +129,4 @@ const styles = StyleSheet.create({
   ctaTitle: { color: Colors.primary, fontSize: FontSize.lg, fontWeight: '700', marginTop: Spacing.sm },
   ctaDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, textAlign: 'center', marginTop: Spacing.xs, lineHeight: 20 },
 });
+
