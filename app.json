@@ -1,4 +1,4 @@
-{
+﻿{
   "expo": {
     "name": "Drift",
     "slug": "drift",
@@ -24,6 +24,7 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "package": "com.drift.app",
+      "navigationBarColor": "#0A0A0F",
       "permissions": [
         "com.android.vending.BILLING"
       ]
@@ -49,3 +50,4 @@
     "owner": "chrismhardin"
   }
 }
+
