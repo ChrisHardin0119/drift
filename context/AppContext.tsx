@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { TrackedService, ServiceChange } from '../data/services';
@@ -49,6 +49,10 @@ interface AppContextType extends AppState {
   subscriptionLoading: boolean;
   subscriptionError: string | null;
   hasFullAccess: boolean;
+  liveChanges: any[];
+  liveStats: any;
+  liveFeedLoading: boolean;
+  refreshLiveFeed: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -314,6 +318,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         subscriptionLoading,
         subscriptionError,
         hasFullAccess,
+        liveChanges,
+        liveStats,
+        liveFeedLoading,
+        refreshLiveFeed,
       }}
     >
       {children}

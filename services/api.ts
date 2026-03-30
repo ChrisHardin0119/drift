@@ -49,10 +49,13 @@ class DriftAPI {
 
   private async fetch<T>(endpoint: string): Promise<T> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       const response = await globalThis.fetch(`${this.baseUrl}${endpoint}`, {
         headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(10000),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (!response.ok) throw new Error(`API error: ${response.status}`);
       return response.json();
     } catch (err: any) {
