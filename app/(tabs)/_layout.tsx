@@ -1,6 +1,7 @@
 ﻿import { Tabs } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { Colors, FontSize } from '../../constants/theme';
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -11,7 +12,9 @@ export default function TabLayout() {
           backgroundColor: Colors.surface,
           borderTopColor: Colors.surfaceBorder,
           borderTopWidth: 1,
+          height: Platform.OS === 'android' ? 60 : undefined,
           paddingTop: 5,
+          paddingBottom: Platform.OS === 'android' ? 8 : undefined,
         },
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
@@ -19,6 +22,7 @@ export default function TabLayout() {
           fontSize: FontSize.xs,
           fontWeight: '600',
         },
+        ...(Platform.OS === 'android' ? { safeAreaInsets: { bottom: 0 } } : {}),
       }}
     >
       <Tabs.Screen
