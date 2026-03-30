@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.drift.app"
+      "bundleIdentifier": "com.variosity.drift"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.drift.app",
+      "package": "com.variosity.drift",
       "navigationBarColor": "#0A0A0F",
       "permissions": [
         "com.android.vending.BILLING"
