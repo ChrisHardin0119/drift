@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Colors, Spacing, FontSize, BorderRadius } from '../constants/theme';
@@ -31,6 +31,11 @@ const severityColors: Record<string, string> = {
   high: Colors.danger,
 };
 
+function stripHtml(text: string): string {
+  if (!text) return '';
+  return text.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&#038;/g, '&').replace(/\s+/g, ' ').trim();
+}
+
 export function ChangeAlert({ serviceName, title, description, date, severity, type, oldValue, newValue }: Props) {
   const color = severityColors[severity];
   const icon = typeIcons[type] || 'info';
@@ -48,8 +53,8 @@ export function ChangeAlert({ serviceName, title, description, date, severity, t
         </View>
         <View style={[styles.severityDot, { backgroundColor: color }]} />
       </View>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
+      <Text style={styles.title}>{stripHtml(title)}</Text>
+      <Text style={styles.description} numberOfLines={4}>{stripHtml(description)}</Text>
       {oldValue && newValue && (
         <View style={styles.comparison}>
           <View style={styles.comparisonItem}>
@@ -139,3 +144,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
+
