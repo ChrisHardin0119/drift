@@ -1,12 +1,8 @@
 ﻿import { Tabs } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { Colors, FontSize } from '../../constants/theme';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
-  const insets = useSafeAreaInsets();
-  const bottomPadding = Math.max(insets.bottom, 10);
-
   return (
     <Tabs
       screenOptions={{
@@ -15,9 +11,7 @@ export default function TabLayout() {
           backgroundColor: Colors.surface,
           borderTopColor: Colors.surfaceBorder,
           borderTopWidth: 1,
-          height: 60 + bottomPadding,
-          paddingBottom: bottomPadding,
-          paddingTop: 10,
+          paddingTop: 5,
         },
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
