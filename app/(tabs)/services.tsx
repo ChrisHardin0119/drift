@@ -69,7 +69,7 @@ export default function Services() {
       billingCycle: 'monthly',
       color: service.color,
     });
-    // Don't close modal â€” let them keep adding
+    // Don't close modal  - let them keep adding
   };
 
   const handleAddCustom = () => {
@@ -89,7 +89,7 @@ export default function Services() {
 
   const handleSubmitRequest = () => {
     if (!requestName.trim()) return;
-    // Store the request locally for now â€” in V2 this would hit an API
+    // Store the request locally for now  - in V2 this would hit an API
     // For now we save it to AsyncStorage as a "requested service"
     setRequestSubmitted(true);
     setTimeout(() => {

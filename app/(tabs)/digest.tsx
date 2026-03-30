@@ -7,12 +7,36 @@ import { useApp } from '../../context/AppContext';
 import { ChangeAlert } from '../../components/ChangeAlert';
 
 export default function Digest() {
-  const { services, getRecentChanges } = useApp();
+  const { services, getRecentChanges, liveChanges } = useApp();
   const recentChanges = getRecentChanges();
 
-  const allChanges = services.flatMap(s =>
+  // Combine local service changes with live feed changes from API
+  const serviceChanges = services.flatMap(s =>
     s.changes.map(c => ({ serviceName: s.name, change: c }))
-  ).sort((a, b) => new Date(b.change.date).getTime() - new Date(a.change.date).getTime());
+  );
+
+  const liveAsChanges = (liveChanges || []).map((c: any) => ({
+    serviceName: c.service_name || 'Unknown',
+    change: {
+      title: c.title || '',
+      description: c.description || '',
+      date: c.effective_date || c.created_at || new Date().toISOString(),
+      severity: c.change_type === 'price_increase' ? 'high' : c.change_type === 'new_tier' ? 'medium' : 'low',
+      type: c.change_type || 'update',
+      oldValue: c.old_value,
+      newValue: c.new_value,
+    }
+  }));
+
+  // Deduplicate by title
+  const seen = new Set<string>();
+  const allChanges = [...serviceChanges, ...liveAsChanges]
+    .filter(item => {
+      if (seen.has(item.change.title)) return false;
+      seen.add(item.change.title);
+      return true;
+    })
+    .sort((a, b) => new Date(b.change.date).getTime() - new Date(a.change.date).getTime());
 
   const thisWeek = new Date();
   thisWeek.setDate(thisWeek.getDate() - 7);

@@ -177,7 +177,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           date: now,
           type: changeType,
           severity: Math.abs(newPrice - oldPrice) > 3 ? 'high' : Math.abs(newPrice - oldPrice) > 1 ? 'medium' : 'low',
-          title: `Price ${changeType === 'price_increase' ? 'increased' : 'decreased'} ${reason ? 'â€” ' + reason : ''}`,
+          title: `Price ${changeType === 'price_increase' ? 'increased' : 'decreased'} ${reason ? ' - ' + reason : ''}`,
           description: `${s.name} changed from $${oldPrice.toFixed(2)}/mo to $${newPrice.toFixed(2)}/mo`,
           oldValue: `$${oldPrice.toFixed(2)}/mo`,
           newValue: `$${newPrice.toFixed(2)}/mo`,

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿﻿import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Platform, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -79,7 +79,7 @@ export default function Settings() {
             <View style={styles.betaActive}>
               <Feather name="check-circle" size={24} color={Colors.success} />
               <Text style={styles.betaActiveText}>
-                {isBetaUser ? 'Beta Tester' : getPlanLabel()} â€” All Pro features unlocked
+                {isBetaUser ? 'Beta Tester' : getPlanLabel()}  - All Pro features unlocked
               </Text>
               <Text style={styles.betaActiveDesc}>
                 {isBetaUser
@@ -175,7 +175,7 @@ export default function Settings() {
                     <ActivityIndicator color={Colors.white} />
                   ) : (
                     <Text style={styles.subscribeBtnText}>
-                      Subscribe â€” {getPrice(SUBSCRIPTION_SKUS.PRO_MONTHLY, '$3/month')}
+                      Subscribe  - {getPrice(SUBSCRIPTION_SKUS.PRO_MONTHLY, '$3/month')}
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -218,7 +218,7 @@ export default function Settings() {
                     <ActivityIndicator color={Colors.white} />
                   ) : (
                     <Text style={styles.subscribeBtnText}>
-                      Subscribe â€” {getPrice(SUBSCRIPTION_SKUS.PRO_YEARLY, '$15/year')}
+                      Subscribe  - {getPrice(SUBSCRIPTION_SKUS.PRO_YEARLY, '$15/year')}
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -249,7 +249,7 @@ export default function Settings() {
           {isBetaUser ? (
             <View style={styles.betaSmall}>
               <Feather name="check-circle" size={18} color={Colors.success} />
-              <Text style={styles.betaSmallText}>Beta activated â€” all Pro features unlocked</Text>
+              <Text style={styles.betaSmallText}>Beta activated  - all Pro features unlocked</Text>
             </View>
           ) : (
             <>
@@ -312,7 +312,7 @@ export default function Settings() {
             <Text style={styles.sectionTitle}>About Drift</Text>
           </View>
           <Text style={styles.aboutText}>
-            Drift watches your digital subscriptions for changes you'd otherwise miss â€” price creeps, feature removals, privacy policy shifts, and more.
+            Drift watches your digital subscriptions for changes you'd otherwise miss  - price creeps, feature removals, privacy policy shifts, and more.
           </Text>
           <Text style={styles.version}>Version 1.1.0</Text>
           <Text style={styles.credit}>Built by Variosity Applications</Text>
