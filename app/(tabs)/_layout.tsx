@@ -1,12 +1,14 @@
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
-import { View, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Colors, FontSize } from '../../constants/theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.surface }} edges={['bottom']}>
+    <View style={{ flex: 1, backgroundColor: Colors.surface, paddingBottom: Math.round(insets.bottom * 0.5) }}>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -14,7 +16,7 @@ export default function TabLayout() {
             backgroundColor: Colors.surface,
             borderTopColor: Colors.surfaceBorder,
             borderTopWidth: 1,
-            paddingTop: 8,
+            paddingTop: 6,
             paddingBottom: 4,
           },
           safeAreaInsets: { bottom: 0 },
@@ -32,6 +34,6 @@ export default function TabLayout() {
         <Tabs.Screen name="history" options={{ title: 'Missed', tabBarIcon: ({ color, size }) => <Feather name="clock" size={size} color={color} /> }} />
         <Tabs.Screen name="settings" options={{ title: 'Settings', tabBarIcon: ({ color, size }) => <Feather name="settings" size={size} color={color} /> }} />
       </Tabs>
-    </SafeAreaView>
+    </View>
   );
 }
