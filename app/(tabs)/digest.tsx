@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -24,7 +24,7 @@ export default function Digest() {
   const olderChanges = allChanges.filter(c => new Date(c.change.date) < thisMonth);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>Weekly Digest</Text>
         <View style={styles.dateBadge}>
@@ -153,3 +153,4 @@ const styles = StyleSheet.create({
   emptyDesc: { color: Colors.textSecondary, fontSize: FontSize.md, textAlign: 'center', marginTop: Spacing.sm, lineHeight: 22, paddingHorizontal: Spacing.lg },
   emptyHint: { color: Colors.textMuted, fontSize: FontSize.sm, marginTop: Spacing.md },
 });
+

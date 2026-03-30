@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Modal, FlatList, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -69,7 +69,7 @@ export default function Services() {
       billingCycle: 'monthly',
       color: service.color,
     });
-    // Don't close modal — let them keep adding
+    // Don't close modal â€” let them keep adding
   };
 
   const handleAddCustom = () => {
@@ -89,7 +89,7 @@ export default function Services() {
 
   const handleSubmitRequest = () => {
     if (!requestName.trim()) return;
-    // Store the request locally for now — in V2 this would hit an API
+    // Store the request locally for now â€” in V2 this would hit an API
     // For now we save it to AsyncStorage as a "requested service"
     setRequestSubmitted(true);
     setTimeout(() => {
@@ -109,7 +109,7 @@ export default function Services() {
     : services.filter(s => s.category === trackedFilter);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>My Services</Text>
         <TouchableOpacity
@@ -548,3 +548,4 @@ const styles = StyleSheet.create({
   removeButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.md, gap: Spacing.sm, marginTop: Spacing.lg },
   removeText: { color: Colors.danger, fontSize: FontSize.md, fontWeight: '600' },
 });
+

@@ -1,0 +1,23 @@
+★ eas-cli@18.4.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+(node:41576) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+Resolved "preview" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "preview" environment on EAS.
+
+
+
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+√ Using remote Android credentials (Expo server)
+√ Using Keystore from configuration: Build Credentials YIIcDK5X65 (default)
+
+Compressing project files and uploading to EAS Build. Learn more: https://expo.fyi/eas-build-archive
+- Uploading to EAS Build (0 / 1.2 MB)\ Uploading to EAS Build (192 KB / 1.2 MB)| Uploading to EAS Build (1.2 MB / 1.2 MB)√ Uploaded to EAS 
+- Computing project fingerprint× Failed to compute project fingerprint
+⏩ To skip this step, set the environment variable: EAS_SKIP_AUTO_FINGERPRINT=1
+Cannot find module 'C:\Users\Chris\drift\node_modules\isexe\index.js'. Please verify that the package.json has a valid "main" entry
+    Error: build command failed.

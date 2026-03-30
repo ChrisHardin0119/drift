@@ -25,7 +25,7 @@ export default function History() {
   const sorted = [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>What You Missed</Text>
         <Text style={styles.subtitle}>12 months of changes you probably didn't notice</Text>
@@ -129,4 +129,6 @@ const styles = StyleSheet.create({
   ctaTitle: { color: Colors.primary, fontSize: FontSize.lg, fontWeight: '700', marginTop: Spacing.sm },
   ctaDesc: { color: Colors.textSecondary, fontSize: FontSize.sm, textAlign: 'center', marginTop: Spacing.xs, lineHeight: 20 },
 });
+
+
 

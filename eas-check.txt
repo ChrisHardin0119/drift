@@ -1,0 +1,2 @@
+C:\Users\Chris\AppData\Roaming\npm\eas
+C:\Users\Chris\AppData\Roaming\npm\eas.cmd

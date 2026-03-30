@@ -1,4 +1,7 @@
-import { Tabs } from 'expo-router';
+import os
+
+# === FIX 1: Rewrite tab layout completely ===
+tab_content = """import { Tabs } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { Colors, FontSize } from '../../constants/theme';
 
@@ -29,3 +32,25 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+"""
+with open(r'C:\Users\Chris\drift\app\(tabs)\_layout.tsx', 'w', encoding='utf-8') as f:
+    f.write(tab_content)
+print('Tab layout rewritten (no safeAreaInsets override, no hardcoded height)')
+
+# === FIX 2: Ensure all screens have edges top ===
+tabs_dir = r'C:\Users\Chris\drift\app\(tabs)'
+for fname in ['index.tsx', 'digest.tsx', 'history.tsx', 'services.tsx', 'settings.tsx']:
+    fpath = os.path.join(tabs_dir, fname)
+    with open(fpath, 'r', encoding='utf-8') as f:
+        c = f.read()
+    if "edges={['top']}" not in c and "<SafeAreaView style={styles.container}>" in c:
+        c = c.replace('<SafeAreaView style={styles.container}>', "<SafeAreaView style={styles.container} edges={['top']}>")
+        with open(fpath, 'w', encoding='utf-8') as f:
+            f.write(c)
+        print(f'  {fname}: added edges top')
+    elif "edges={['top']}" in c:
+        print(f'  {fname}: already has edges top')
+    else:
+        print(f'  {fname}: no SafeAreaView found')
+
+print('\nAll app fixes done!')

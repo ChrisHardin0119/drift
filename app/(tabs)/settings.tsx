@@ -62,7 +62,7 @@ export default function Settings() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>Settings</Text>
       </View>
@@ -383,3 +383,4 @@ const styles = StyleSheet.create({
   version: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: Spacing.md },
   credit: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: Spacing.xs },
 });
+

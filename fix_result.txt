@@ -1,0 +1,8 @@
+Tab layout rewritten (no safeAreaInsets override, no hardcoded height)
+  index.tsx: already has edges top
+  digest.tsx: already has edges top
+  history.tsx: already has edges top
+  services.tsx: already has edges top
+  settings.tsx: already has edges top
+
+All app fixes done!

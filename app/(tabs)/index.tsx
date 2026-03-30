@@ -15,7 +15,7 @@ export default function Dashboard() {
   const recentChanges = getRecentChanges();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View>
@@ -122,6 +122,7 @@ export default function Dashboard() {
                 type={change.type as any}
                 oldValue={change.old_value || undefined}
                 newValue={change.new_value || undefined}
+                sourceUrl={change.source_url || undefined}
               />
             ))}
           </View>
@@ -307,4 +308,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+
+
 
